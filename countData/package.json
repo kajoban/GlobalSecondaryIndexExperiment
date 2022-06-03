@@ -1,0 +1,14 @@
+{
+  "name": "countdata",
+  "version": "1.0.0",
+  "description": "test code for my techblog (to be deleted after done)",
+  "main": "countData.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1148.0"
+  }
+}

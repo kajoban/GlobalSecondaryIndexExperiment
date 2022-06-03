@@ -2,29 +2,36 @@ var AWS = require('aws-sdk');
 var { v4: uuidv4 } = require('uuid');
 var moment = require('moment');
 
-// to upload to lambda:
-// zip -r prepareData.zip .
+var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+
 exports.handler = async (event) => {
-    console.log("preparing data");
+    // run 40 concurrent ddb writes
+    var concurrentRequests = 40;
+    let requestPromises = []
+    for (let i = 0; i < concurrentRequests; i++) {
+        // each request batch writes 25 items
+        requestPromises.push(createBatchWriteItemPromise())
+    }
+    await Promise.all(requestPromises);
+};
 
-    var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
-
+// creates batch write of 25 items 
+// returns a promise
+createBatchWriteItemPromise = async () => {
     var params = {
         RequestItems: {
             'kajoban-order-data-table-1': createPutRequestList()
         }
     }
 
-    console.log(`inserting item ${JSON.stringify(params.RequestItems, null, 2)}`);
-
-    await ddb.batchWriteItem(params, function (err, data) {
+    return await ddb.batchWriteItem(params, function (err, data) {
         if (err) {
             console.log("Error: ", err)
         } else {
             console.log("Success: ", data)
         }
     }).promise()
-};
+}
 
 createPutRequestList = () => {
     putRequestList = []
