@@ -4,38 +4,57 @@ var moment = require('moment');
 
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
+/*
+Sample Event JSON:
+{
+  "concurrentRequests": 20,
+  "numberOfPutRequests": 25,
+  "sequentialWrites": 10
+}
+*/
+
 exports.handler = async (event) => {
-    // run 40 concurrent ddb writes
-    var concurrentRequests = 40;
-    let requestPromises = []
-    for (let i = 0; i < concurrentRequests; i++) {
-        // each request batch writes 25 items
-        requestPromises.push(createBatchWriteItemPromise())
+    // run 500 sequential writes
+    let i;
+    try {
+        for (i = 0; i < event.sequentialWrites; i++) {
+            console.log(`performing concurrent write # ${i}`)
+            await performConcurrentWrite(event.concurrentRequests, event.numberOfPutRequests);
+        }
+        return `inserted ${i + 1 * event.concurrentRequests * event.numberOfPutRequests} items into table`;
+    } catch (error) {
+        console.log(error);
+        return `inserted ${i + 1 * event.concurrentRequests * event.numberOfPutRequests} items into table`;
     }
-    await Promise.all(requestPromises);
 };
+
+// run 40 concurrent ddb writes
+performConcurrentWrite = async (concurrentRequests, numberOfPutRequests) => {
+    let batchWritePromises = []
+    for (let i = 0; i < concurrentRequests; i++) {
+        // each request batch writes items
+        batchWritePromises.push(createBatchWriteItemPromise(numberOfPutRequests))
+    }
+    console.log(`created ${batchWritePromises.length} batch write promises`)
+    await Promise.all(batchWritePromises).then(values => {
+        console.log(`resolved ${batchWritePromises.length} batch write promises`);
+    });
+}
 
 // creates batch write of 25 items 
 // returns a promise
-createBatchWriteItemPromise = async () => {
+createBatchWriteItemPromise = async (numberOfPutRequests) => {
     var params = {
         RequestItems: {
-            'kajoban-order-data-table-1': createPutRequestList()
+            'kajoban-order-data-table-1': createPutRequestList(numberOfPutRequests)
         }
     }
-
-    return await ddb.batchWriteItem(params, function (err, data) {
-        if (err) {
-            console.log("Error: ", err)
-        } else {
-            console.log("Success: ", data)
-        }
-    }).promise()
+    return await ddb.batchWriteItem(params).promise()
 }
 
-createPutRequestList = () => {
+createPutRequestList = (numberOfPutRequests) => {
     putRequestList = []
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < numberOfPutRequests; i++) {
         putRequestList.push(createPutRequest())
     }
     return putRequestList
