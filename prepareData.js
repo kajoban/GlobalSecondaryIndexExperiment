@@ -10,17 +10,14 @@ exports.handler = async (event) => {
     var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 
     var params = {
-        TableName: 'kajoban-order-data-table-1',
-        Item: {
-            'OrderID': { S: uuidv4() },
-            'Items': { L: createItemsList() },
-            'DispatchDate': { S: createRandomDate() }
+        RequestItems: {
+            'kajoban-order-data-table-1': createPutRequestList()
         }
     }
 
-    console.log(`inserting item ${JSON.stringify(params.Item, null, 2)}`);
+    console.log(`inserting item ${JSON.stringify(params.RequestItems, null, 2)}`);
 
-    await ddb.putItem(params, function (err, data) {
+    await ddb.batchWriteItem(params, function (err, data) {
         if (err) {
             console.log("Error: ", err)
         } else {
@@ -29,7 +26,27 @@ exports.handler = async (event) => {
     }).promise()
 };
 
-createItemsList = () => {
+createPutRequestList = () => {
+    putRequestList = []
+    for (let i = 0; i < 25; i++) {
+        putRequestList.push(createPutRequest())
+    }
+    return putRequestList
+}
+
+createPutRequest = () => {
+    return {
+        PutRequest: {
+            Item: {
+                'OrderID': { S: uuidv4() },
+                'Items': { L: createRandomItems() },
+                'DispatchDate': { S: createRandomDate() }
+            }
+        }
+    }
+}
+
+createRandomItems = () => {
     const itemsList = ['SHOES', 'PANTS', 'SHIRT', 'HAT'];
     const numberOfItems = Math.floor(Math.random() * itemsList.length) + 1;
     const orderItems = []
