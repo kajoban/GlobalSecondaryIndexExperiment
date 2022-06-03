@@ -26,7 +26,7 @@ exports.handler = async (event) => {
     }
 };
 
-// run 40 concurrent ddb writes
+// run concurrent ddb writes
 performConcurrentWrite = async (concurrentRequests, numberOfPutRequests) => {
     let batchWritePromises = []
     for (let i = 0; i < concurrentRequests; i++) {
@@ -39,7 +39,7 @@ performConcurrentWrite = async (concurrentRequests, numberOfPutRequests) => {
     });
 }
 
-// creates batch write of 25 items 
+// creates batch write of items 
 // returns a promise
 createBatchWriteItemPromise = (numberOfPutRequests) => {
     var params = {
