@@ -2,29 +2,27 @@ var AWS = require('aws-sdk');
 var { v4: uuidv4 } = require('uuid');
 var moment = require('moment');
 
-var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+var ddb = new AWS.DynamoDB();
 
 /*
 Sample Event JSON:
 {
-  "concurrentRequests": 20,
+  "concurrentRequests": 40,
   "numberOfPutRequests": 25,
-  "sequentialWrites": 10
+  "sequentialWrites": 100
 }
 */
 
 exports.handler = async (event) => {
-    // run 500 sequential writes
     let i;
     try {
         for (i = 0; i < event.sequentialWrites; i++) {
             console.log(`performing concurrent write # ${i}`)
             await performConcurrentWrite(event.concurrentRequests, event.numberOfPutRequests);
         }
-        return `inserted ${i + 1 * event.concurrentRequests * event.numberOfPutRequests} items into table`;
+        return `inserted ${(i + 1) * event.concurrentRequests * event.numberOfPutRequests} items into table`;
     } catch (error) {
-        console.log(error);
-        return `inserted ${i + 1 * event.concurrentRequests * event.numberOfPutRequests} items into table`;
+        return error
     }
 };
 
@@ -43,13 +41,13 @@ performConcurrentWrite = async (concurrentRequests, numberOfPutRequests) => {
 
 // creates batch write of 25 items 
 // returns a promise
-createBatchWriteItemPromise = async (numberOfPutRequests) => {
+createBatchWriteItemPromise = (numberOfPutRequests) => {
     var params = {
         RequestItems: {
             'kajoban-order-data-table-1': createPutRequestList(numberOfPutRequests)
         }
     }
-    return await ddb.batchWriteItem(params).promise()
+    return ddb.batchWriteItem(params).promise()
 }
 
 createPutRequestList = (numberOfPutRequests) => {
