@@ -5,6 +5,9 @@ var moment = require('moment');
 var ddb = new AWS.DynamoDB();
 
 /*
+Concurrently inserts random items
+into a DynamoDB table
+
 Sample Event JSON:
 {
   "concurrentRequests": 40,
@@ -12,7 +15,6 @@ Sample Event JSON:
   "sequentialWrites": 100
 }
 */
-
 exports.handler = async (event) => {
     let i;
     try {
