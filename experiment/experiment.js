@@ -69,7 +69,7 @@ exports.handler = async (event) => {
     // compute average scan and query times
     console.log("===========================")
     console.log(`number of samples: ${event.numberOfSamples} from table ${tableName}`)
-    console.log(`Average scan time per item ${scanTimes.reduce((a, b) => a + b, 0) / scanTimes.length} milliseconds`);
-    console.log(`Average query time per item ${queryTimes.reduce((a, b) => a + b, 0) / queryTimes.length} milliseconds`);
+    console.log(`Average scan time per item: ${scanTimes.reduce((a, b) => a + b, 0) / scanTimes.length} milliseconds`);
+    console.log(`Average query time per item: ${queryTimes.reduce((a, b) => a + b, 0) / queryTimes.length} milliseconds`);
     console.log("===========================")
 }
