@@ -46,7 +46,7 @@ performConcurrentWrite = async (concurrentRequests, numberOfPutRequests) => {
 createBatchWriteItemPromise = (numberOfPutRequests) => {
     var params = {
         RequestItems: {
-            'kajoban-order-data-table-1': createPutRequestList(numberOfPutRequests)
+            'kajoban-order-data-table-3': createPutRequestList(numberOfPutRequests)
         }
     }
     return ddb.batchWriteItem(params).promise()
