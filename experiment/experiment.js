@@ -9,16 +9,16 @@ var ddb = new AWS.DynamoDB();
 /*
 Sample Event JSON:
 {
-  "tableName": "kajoban-order-data-table-1"
+  "tableName": "kajoban-order-data-table-1",
+  "numberOfSamples": 50
 }
 */
 exports.handler = async (event) => {
     const tableName = event.tableName;
-    const numberOfSamples = 10; // TODO: INCREASE THIS
     let scanTimes = [];
     let queryTimes = [];
     let items;
-    for (let i = 0; i < numberOfSamples; i++) {
+    for (let i = 0; i < event.numberOfSamples; i++) {
         // get a random DispatchDate
         const item = await getItem()
         const dispatchDate = item["Items"][0]["DispatchDate"]["S"]
@@ -34,7 +34,7 @@ exports.handler = async (event) => {
         };
         const scanStartTime = performance.now();
         let scanRes = [];
-        do { // paginated scan
+        do { // paginated scan https://stackoverflow.com/questions/60658527/unable-to-get-all-items-using-query-dynamodb
             items = await ddb.scan(scanParams).promise()
             items.Items.map((item) => scanRes.push(item));
             scanParams.ExclusiveStartKey = items.LastEvaluatedKey;
@@ -68,7 +68,7 @@ exports.handler = async (event) => {
 
     // compute average scan and query times
     console.log("===========================")
-    console.log(`number of samples: ${numberOfSamples} from table ${tableName}`)
+    console.log(`number of samples: ${event.numberOfSamples} from table ${tableName}`)
     console.log(`Average scan time per item ${scanTimes.reduce((a, b) => a + b, 0) / scanTimes.length} milliseconds`);
     console.log(`Average query time per item ${queryTimes.reduce((a, b) => a + b, 0) / queryTimes.length} milliseconds`);
     console.log("===========================")
