@@ -1,8 +1,8 @@
-var AWS = require('aws-sdk');
-var { v4: uuidv4 } = require('uuid');
-var moment = require('moment');
+const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
+const moment = require('moment');
 
-var ddb = new AWS.DynamoDB();
+const ddb = new AWS.DynamoDB();
 
 /*
 Concurrently inserts random items
@@ -10,6 +10,7 @@ into a DynamoDB table
 
 Sample Event JSON:
 {
+  "tableName": "example-order-table",
   "concurrentRequests": 40,
   "numberOfPutRequests": 25,
   "sequentialWrites": 100
@@ -19,23 +20,23 @@ exports.handler = async (event) => {
     let i;
     try {
         for (i = 0; i < event.sequentialWrites; i++) {
-            console.log(`performing concurrent write # ${i}`)
-            await performConcurrentWrite(event.concurrentRequests, event.numberOfPutRequests);
+            console.log(`performing concurrent write # ${i}`);
+            await performConcurrentWrite(event.tableName, event.concurrentRequests, event.numberOfPutRequests);
         }
         return `inserted ${(i + 1) * event.concurrentRequests * event.numberOfPutRequests} items into table`;
     } catch (error) {
-        return error
+        return error;
     }
 };
 
 // run concurrent ddb writes
-performConcurrentWrite = async (concurrentRequests, numberOfPutRequests) => {
-    let batchWritePromises = []
+performConcurrentWrite = async (tableName, concurrentRequests, numberOfPutRequests) => {
+    let batchWritePromises = [];
     for (let i = 0; i < concurrentRequests; i++) {
         // each request batch writes items
-        batchWritePromises.push(createBatchWriteItemPromise(numberOfPutRequests))
+        batchWritePromises.push(createBatchWriteItemPromise(tableName, numberOfPutRequests));
     }
-    console.log(`created ${batchWritePromises.length} batch write promises`)
+    console.log(`created ${batchWritePromises.length} batch write promises`);
     await Promise.all(batchWritePromises).then(values => {
         console.log(`resolved ${batchWritePromises.length} batch write promises`);
     });
@@ -43,21 +44,21 @@ performConcurrentWrite = async (concurrentRequests, numberOfPutRequests) => {
 
 // creates batch write of items 
 // returns a promise
-createBatchWriteItemPromise = (numberOfPutRequests) => {
-    var params = {
+createBatchWriteItemPromise = (tableName, numberOfPutRequests) => {
+    const params = {
         RequestItems: {
-            'kajoban-order-data-table-3': createPutRequestList(numberOfPutRequests)
+            tableName: createPutRequestList(numberOfPutRequests)
         }
     }
-    return ddb.batchWriteItem(params).promise()
+    return ddb.batchWriteItem(params).promise();
 }
 
 createPutRequestList = (numberOfPutRequests) => {
-    putRequestList = []
+    putRequestList = [];
     for (let i = 0; i < numberOfPutRequests; i++) {
-        putRequestList.push(createPutRequest())
+        putRequestList.push(createPutRequest());
     }
-    return putRequestList
+    return putRequestList;
 }
 
 createPutRequest = () => {
@@ -75,13 +76,13 @@ createPutRequest = () => {
 createRandomItems = () => {
     const itemsList = ['SHOES', 'PANTS', 'SHIRT', 'HAT'];
     const numberOfItems = Math.floor(Math.random() * itemsList.length) + 1;
-    const orderItems = []
+    const orderItems = [];
     for (let i = 0; i < numberOfItems; i++) {
         orderItems.push({
             S: itemsList[Math.floor(Math.random() * itemsList.length)]
         })
     }
-    return orderItems
+    return orderItems;
 }
 
 createRandomDate = () => {

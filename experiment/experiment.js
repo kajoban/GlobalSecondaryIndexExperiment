@@ -1,10 +1,10 @@
 const {
     performance
 } = require('perf_hooks');
-var AWS = require('aws-sdk');
+const AWS = require('aws-sdk');
 const { handler: getItem } = require('./getItem');
 
-var ddb = new AWS.DynamoDB();
+const ddb = new AWS.DynamoDB();
 
 /*
 Sample Event JSON:
