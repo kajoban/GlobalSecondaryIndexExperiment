@@ -24,7 +24,7 @@ exports.handler = async (event) => {
         const dispatchDate = item["Items"][0]["DispatchDate"]["S"]
 
         // time scan on DispatchDate
-        var scanParams = {
+        let scanParams = {
             TableName: tableName,
             FilterExpression: "#DispatchDate = :dispatchDate",
             ExpressionAttributeNames: { "#DispatchDate": "DispatchDate" },
@@ -45,7 +45,7 @@ exports.handler = async (event) => {
         scanTimes.push(scanElapsedTime);
 
         // time of query on DispatchDate 
-        const queryParams = {
+        let queryParams = {
             TableName: tableName,
             IndexName: 'DispatchDate-index',
             KeyConditionExpression: 'DispatchDate = :dispatchDate',
@@ -58,7 +58,7 @@ exports.handler = async (event) => {
         do { // paginated query
             items = await ddb.query(queryParams).promise()
             items.Items.map((item) => queryRes.push(item));
-            scanParams.ExclusiveStartKey = items.LastEvaluatedKey;
+            queryParams.ExclusiveStartKey = items.LastEvaluatedKey;
         } while (typeof items.LastEvaluatedKey != "undefined");
         const queryEndTime = performance.now()
         const queryElapsedTime = queryEndTime - queryStartTime
