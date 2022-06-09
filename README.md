@@ -17,10 +17,10 @@ Source code for Lambda that will concurrently batch insert random items into a s
 DynamoDB table should already exist, and Lambda needs permissions for writing to table and should point to `prepareData.js`. 
 
 In order to upload Lambda:
-0. cd into `/prepareData`
-1. run `npm install` to install dependencies
-2. run `zip -r prepareData.zip .` to create zip file of source code
-3. upload zip file to Lambda 
+1. cd into `/prepareData`
+2. run `npm install` to install dependencies
+3. run `zip -r prepareData.zip .` to create zip file of source code
+4. upload zip file to Lambda 
 
 ## experiment 
 
@@ -37,7 +37,7 @@ each item, and log the individual response times, as well as the average respons
 DynamoDB table should already exist, and Lambda needs permissions for reading from table and should point to `experiment.js`.
 
 In order to upload Lambda:
-0. cd into `/experiment`
-1. run `npm install` to install dependencies
-2. run `zip -r experiment.zip .` to create zip file of source code
-3. upload zip file to Lambda
+1. cd into `/experiment`
+2. run `npm install` to install dependencies
+3. run `zip -r experiment.zip .` to create zip file of source code
+4. upload zip file to Lambda
