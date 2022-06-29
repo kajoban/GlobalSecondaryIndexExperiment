@@ -1,5 +1,5 @@
-const AWS = require('aws-sdk');
-const { v4: uuidv4 } = require('uuid');
+const AWS = require("aws-sdk");
+const { v4: uuidv4 } = require("uuid");
 
 const ddb = new AWS.DynamoDB();
 
@@ -12,14 +12,12 @@ Read more: https://stackoverflow.com/questions/10666364/aws-dynamodb-pick-a-reco
 */
 exports.handler = async (event) => {
     const params = {
-        TableName: 'kajoban-order-data-table-1',
+        TableName: "kajoban-order-data-table-1",
         Limit: 1,
         ExclusiveStartKey: {
-            "OrderID": { "S": uuidv4() }
+            OrderID: { S: uuidv4() },
         },
     };
 
     return await ddb.scan(params).promise();
-}
-
-
+};
