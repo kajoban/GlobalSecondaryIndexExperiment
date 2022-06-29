@@ -1,4 +1,4 @@
-# GSIExperiment
+# GlobalSecondaryIndexExperiment
 Source code for GSI Query vs. Scan on DynamoDB table experiment. Read about the outcome on SSENSE's tech blog!
 
 ## prepareDate
