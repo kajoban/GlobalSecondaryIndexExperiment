@@ -18,7 +18,7 @@ exports.handler = async (event) => {
     let items;
     for (let i = 0; i < event.numberOfSamples; i++) {
         // get a random DispatchDate
-        const item = await getItem();
+        const item = await getItem(event.tableName);
         const dispatchDate = item["Items"][0]["DispatchDate"]["S"];
 
         // time scan on DispatchDate

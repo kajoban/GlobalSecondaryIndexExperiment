@@ -10,9 +10,9 @@ from a random uuid, and limiting the result to 1 item
 
 Read more: https://stackoverflow.com/questions/10666364/aws-dynamodb-pick-a-record-item-randomly
 */
-exports.handler = async (event) => {
+exports.handler = async (tableName) => {
     const params = {
-        TableName: "kajoban-order-data-table-1",
+        TableName: tableName,
         Limit: 1,
         ExclusiveStartKey: {
             OrderID: { S: uuidv4() },
