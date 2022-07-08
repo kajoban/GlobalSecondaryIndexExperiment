@@ -1,5 +1,5 @@
 # GlobalSecondaryIndexExperiment
-🔍 Source code for GSI Query vs. Scan experiment on DynamoDB. Read about the outcome on SSENSE's tech blog!
+🔍 Source code for GSI Query vs. Scan experiment on DynamoDB. [Read about the outcome on SSENSE's tech blog!](https://medium.com/ssense-tech/stop-using-scan-speed-up-your-dynamodb-reads-by-leveraging-global-secondary-indexes-407d076cc126)
 
 ## prepareDate
 
