@@ -58,7 +58,7 @@ performConcurrentWrite = async (
 createBatchWriteItemPromise = (tableName, numberOfPutRequests) => {
     const params = {
         RequestItems: {
-            tableName: createPutRequestList(numberOfPutRequests),
+            [tableName]: createPutRequestList(numberOfPutRequests),
         },
     };
     return ddb.batchWriteItem(params).promise();
